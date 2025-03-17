@@ -15,26 +15,20 @@ function App() {
     e: 0.05, // Alcohol effect
   });
 
-  // Constant metabolic values
-  const constants = {
+  // States for adjustable metabolic values (including lactate and glucose now)
+  const [metabolicValues, setMetabolicValues] = useState({
     lactate: 1.2, // mmol/L
     glucose: 5.0, // mmol/L
     caffeine: 0, // Default start with no caffeine
     alcohol: 0,  // Default start with no alcohol
-  };
-
-  // States for adjustable metabolic values
-  const [metabolicValues, setMetabolicValues] = useState({
-    caffeine: constants.caffeine,
-    alcohol: constants.alcohol,
   });
 
   // Calculate FatOx
   const calculateFatOx = () => {
     return (
       params.a - 
-      params.b * constants.lactate + 
-      params.c * constants.glucose + 
+      params.b * metabolicValues.lactate + 
+      params.c * metabolicValues.glucose + 
       params.d * metabolicValues.caffeine - 
       params.e * metabolicValues.alcohol
     ).toFixed(3);
@@ -95,10 +89,22 @@ function App() {
             
             <div className="bg-[#4F959D] p-6 rounded-lg shadow text-white">
               <h2 className="text-2xl font-bold mb-4">Metabolic Values</h2>
-              <div className="mb-4">
-                <p className="font-bold">Lactate: <span className="text-[#F6F8D5]">{constants.lactate} mmol/L</span> (constant)</p>
-                <p className="font-bold">Glucose: <span className="text-[#F6F8D5]">{constants.glucose} mmol/L</span> (constant)</p>
-              </div>
+              
+              <ParameterSlider 
+                label="Lactate (mmol/L)" 
+                value={metabolicValues.lactate} 
+                onChange={(e) => updateMetabolicValue('lactate', e.target.value)}
+                min={0.5} max={10} step={0.1} 
+                lightTheme={false}
+              />
+              
+              <ParameterSlider 
+                label="Glucose (mmol/L)" 
+                value={metabolicValues.glucose} 
+                onChange={(e) => updateMetabolicValue('glucose', e.target.value)}
+                min={3.0} max={12} step={0.1} 
+                lightTheme={false}
+              />
               
               <ParameterSlider 
                 label="Caffeine" 
@@ -107,6 +113,7 @@ function App() {
                 min={0} max={10} step={0.1} 
                 lightTheme={false}
               />
+              
               <ParameterSlider 
                 label="Alcohol" 
                 value={metabolicValues.alcohol} 
